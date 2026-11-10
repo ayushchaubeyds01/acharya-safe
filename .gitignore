@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+*.db
+
+# Node.js
+node_modules/
+dist/
+
+# Environment files
+.env.*
+!.env.example
+
+# IDE
+.vscode/
