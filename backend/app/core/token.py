@@ -1,4 +1,6 @@
 
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -46,3 +48,16 @@ def decode_access_token(token: str) -> dict:
 
     return payload
 
+
+def create_refresh_token() -> str:
+    """Generate a cryptographically secure opaque refresh token."""
+
+    return secrets.token_urlsafe(64)
+
+
+def hash_refresh_token(token: str) -> str:
+    """Generate a SHA-256 hash of a refresh token for database storage."""
+
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
