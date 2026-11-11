@@ -7,6 +7,7 @@ from app.core.security import hash_password, verify_password
 from app.core.token import create_access_token
 from app.models.user import User
 from app.schemas.auth import UserRegister
+from app.services.otp_service import verify_otp_challenge
 
 
 def register_user(db: Session, user_data: UserRegister) -> User:
@@ -59,6 +60,26 @@ def authenticate_email_user(
         return None
 
     if not user.is_active:
+        return None
+
+    return user
+
+
+def authenticate_mobile_user(
+    db: Session,
+    phone_number: str,
+    otp: str
+) -> User | None:
+    """Authenticate an existing user using mobile OTP."""
+
+    user = db.scalar(
+        select(User).where(User.phone_number == phone_number)
+    )
+
+    if not user or not user.is_active:
+        return None
+
+    if not verify_otp_challenge(db, user.id, otp):
         return None
 
     return user

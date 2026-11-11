@@ -31,3 +31,12 @@ class UserResponse(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class MobileOTPRequest(BaseModel):
+    phone_number: str = Field(min_length=10, max_length=20)
+
+
+class MobileOTPVerify(BaseModel):
+    phone_number: str = Field(min_length=10, max_length=20)
+    otp: str = Field(pattern=r"^\d{6}$")
