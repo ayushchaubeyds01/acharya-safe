@@ -1,20 +1,34 @@
 
 import { useState } from 'react'
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from 'react-router-dom'
+
 import './App.css'
+
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import EmergencyContacts from './pages/EmergencyContacts'
+
+import Navbar from './components/Navbar'
 import { useAuth } from './context/AuthContext'
 
-function App() {
+function AppContent() {
   const { user, loading, logout } = useAuth()
   const [logoutError, setLogoutError] = useState('')
-  const [showRegister, setShowRegister] = useState(false)
+  const navigate = useNavigate()
 
   async function handleLogout() {
     setLogoutError('')
 
     try {
       await logout()
+      navigate('/login', { replace: true })
     } catch {
       setLogoutError('Logout request failed. Please try again.')
     }
@@ -25,42 +39,80 @@ function App() {
   }
 
   if (!user) {
-    if (showRegister) {
-      return (
-        <Register
-          onLoginClick={() => setShowRegister(false)}
-        />
-      )
-    }
-
     return (
-      <main>
-        <Login />
-        <p>
-          Don't have an account?{' '}
-          <button
-            type="button"
-            onClick={() => setShowRegister(true)}
-          >
-            Create Account
-          </button>
-        </p>
-      </main>
+      <Routes>
+        <Route
+          path="/register"
+          element={
+            <Register
+              onLoginClick={() => navigate('/login')}
+            />
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <main>
+              <Login />
+              <p>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/register')}
+                >
+                  Create Account
+                </button>
+              </p>
+            </main>
+          }
+        />
+      </Routes>
     )
   }
 
   return (
-    <main>
-      <h1>ACHARYA SAFE</h1>
-      <h2>Welcome, {user.full_name}</h2>
-      <p>You are successfully logged in.</p>
+    <div className="app-shell">
+      <Navbar
+        fullName={user.full_name}
+        email={user.email}
+        onLogout={handleLogout}
+      />
 
-      {logoutError && <p role="alert">{logoutError}</p>}
+      <main className="dashboard-content">
+        {logoutError && <p role="alert">{logoutError}</p>}
 
-      <button type="button" onClick={handleLogout}>
-        Sign Out
-      </button>
-    </main>
+        <Routes>
+          <Route
+            path="/"
+            element={<Navigate to="/dashboard" replace />}
+          />
+
+          <Route
+            path="/dashboard"
+            element={<Dashboard fullName={user.full_name} />}
+          />
+
+          <Route
+            path="/emergency-contacts"
+            element={<EmergencyContacts />}
+          />
+
+          <Route
+            path="*"
+            element={<Navigate to="/dashboard" replace />}
+          />
+        </Routes>
+      </main>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }
 
