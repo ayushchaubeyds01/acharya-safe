@@ -14,6 +14,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import EmergencyContacts from './pages/EmergencyContacts'
+import Incidents from './pages/Incidents'
 
 import Navbar from './components/Navbar'
 import { useAuth } from './context/AuthContext'
@@ -96,6 +97,11 @@ function AppContent() {
           <Route
             path="/emergency-contacts"
             element={<EmergencyContacts />}
+          />
+
+          <Route
+            path="/incidents"
+            element={<Incidents />}
           />
 
           <Route
