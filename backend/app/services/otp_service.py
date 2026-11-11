@@ -94,8 +94,14 @@ def verify_otp_challenge(
     if challenge is None:
         return False
 
+    # Normalize SQLite's timezone-naive datetime to UTC.
+    expires_at = challenge.expires_at
+
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
     # Reject expired OTPs.
-    if challenge.expires_at <= current_time:
+    if expires_at <= current_time:
         challenge.consumed_at = current_time
         db.commit()
         return False

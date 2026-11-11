@@ -1,7 +1,8 @@
+
 from datetime import datetime
 import uuid
 
-from sqlalchemy import Boolean, DateTime, String, Uuid, func
+from sqlalchemy import Boolean, CheckConstraint, DateTime, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -9,6 +10,13 @@ from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"
+
+    __table_args__ = (
+        CheckConstraint(
+            "role IN ('user', 'admin')",
+            name="ck_users_role"
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid,
@@ -37,6 +45,13 @@ class User(Base):
 
     hashed_password: Mapped[str] = mapped_column(
         String(255),
+        nullable=False
+    )
+
+    role: Mapped[str] = mapped_column(
+        String(20),
+        default="user",
+        server_default="user",
         nullable=False
     )
 

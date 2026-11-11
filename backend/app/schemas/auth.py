@@ -21,6 +21,7 @@ class UserResponse(BaseModel):
     full_name: str
     email: EmailStr
     phone_number: str
+    role: str
     is_email_verified: bool
     is_phone_verified: bool
     is_active: bool
